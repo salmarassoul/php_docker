@@ -10,3 +10,5 @@ RUN sed -i \
     conf/httpd.conf
 
 COPY apache.conf /usr/local/apache2/conf/httpd.conf
+
+WORKDIR /usr/local/apache2/htdocs/
