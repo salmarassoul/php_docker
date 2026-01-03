@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  php:
+    build: ./php
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - iibs-network
+
+  apache:
+    build: ./apache
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - php
+    networks:
+      - iibs-network
+
+  mysql-iibs2:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: crud_db
+      MYSQL_USER: phpuser
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - iibs-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql-iibs2
+      PMA_USER: phpuser
+      PMA_PASSWORD: secret
+    depends_on:
+      - mysql-iibs2
+    networks:
+      - iibs-network
+
+networks:
+  iibs-network:
+
+volumes:
+  db_data:
